@@ -27,7 +27,7 @@ public class AccountManager {
 
 	public void init() {
 
-		redisIP = "10.137.35.33";
+		redisIP = "10.136.33.136";
 
 		conf = new JedisPoolConfig();
 		conf.setTestOnBorrow(true);

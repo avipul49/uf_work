@@ -20,6 +20,14 @@ public final class R {
     public static final class attr {
     }
     public static final class dimen {
+        /** 
+         Example customization of dimensions originally defined in res/values/dimens.xml
+         (such as screen margins) for screens with more than 820dp of available width. This
+         would include 7" and 10" devices in landscape (~960dp and ~1280dp respectively).
+    
+         */
+        public static final int activity_horizontal_margin=0x7f050003;
+        public static final int activity_vertical_margin=0x7f050004;
         public static final int padding_large=0x7f050002;
         public static final int padding_medium=0x7f050001;
         public static final int padding_small=0x7f050000;
@@ -36,14 +44,16 @@ public final class R {
         public static final int placeholder2=0x7f020008;
     }
     public static final class id {
+        public static final int action_settings=0x7f090010;
         public static final int container=0x7f090000;
         public static final int direction=0x7f090001;
+        public static final int graph=0x7f09000e;
         public static final int layout_guidefragment=0x7f090009;
         public static final int layout_mapfragment=0x7f09000a;
         public static final int layout_socialfragment=0x7f09000c;
         public static final int linearLayout1=0x7f090002;
         public static final int loginbutton=0x7f090007;
-        public static final int menu_settings=0x7f09000e;
+        public static final int menu_settings=0x7f09000f;
         public static final int motionlayer=0x7f09000b;
         public static final int signupbutton=0x7f090008;
         public static final int stop_button=0x7f09000d;
@@ -71,8 +81,10 @@ public final class R {
         public static final int activity_new=0x7f080005;
         public static final int activity_warmup=0x7f080006;
         public static final int activity_welcome=0x7f080007;
+        public static final int realtime_updates=0x7f080008;
     }
     public static final class string {
+        public static final int action_settings=0x7f06000f;
         public static final int app_name=0x7f060000;
         public static final int hello_world=0x7f060001;
         public static final int jedis_server=0x7f06000d;
@@ -81,6 +93,7 @@ public final class R {
         public static final int title_activity_guide=0x7f060006;
         public static final int title_activity_main=0x7f060005;
         public static final int title_activity_main2=0x7f06000c;
+        public static final int title_activity_realtime_updates=0x7f06000e;
         public static final int title_activity_social=0x7f060007;
         public static final int title_activity_warmup=0x7f060004;
         public static final int title_activity_welcome=0x7f060003;

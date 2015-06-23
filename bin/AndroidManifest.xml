@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.s3lab.guoguo.v1"
     android:versionCode="1"
@@ -21,6 +22,7 @@
             android:label="@string/title_activity_welcome" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -36,6 +38,11 @@
         <service
             android:name=".DataService"
             android:enabled="true" />
+
+        <activity
+            android:name=".RealtimeUpdates"
+            android:label="@string/title_activity_realtime_updates" >
+        </activity>
     </application>
 
 </manifest>

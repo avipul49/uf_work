@@ -5,8 +5,7 @@
 #include <sys/socket.h>
 
 #define BUFFERFRAMES 2048
-#define VECSAMPS_MONO 512
-#define VECSAMPS_STEREO 1024
+#define VECSAMPS_MONO 1024
 #define SR 44100
 
 static int on;
@@ -94,23 +93,19 @@ void Java_com_s3lab_guoguo_v1_DataService_startProcess(JNIEnv *env,
 	init(env, clazz);
 	OPENSL_STREAM *p;
 	int samps, i, j;
-	float inbuffer[VECSAMPS_MONO], outt[VECSAMPS_STEREO];
+	float inbuffer[VECSAMPS_MONO];
 	jfloat outbuffer[VECSAMPS_MONO];
 	p = android_OpenAudioDevice(SR, 1, 2, BUFFERFRAMES);
 	if (p == NULL)
 		return;
 	on = 1;
-	//jclass cls = (*env)->GetObjectClass(env, obj);
-	//jmethodID mid = (*env)->GetStaticMethodID(env, obj, "callback", "([F)V");
 	while (on) {
 		samps = android_AudioIn(p, inbuffer, VECSAMPS_MONO);
 
 		j = 0;
 		for (i = 0; i < samps; i++) {
 			outbuffer[i] = inbuffer[i];
-			outt[j++] = outt[j++] = inbuffer[i];
 		}
-		//__android_log_print(ANDROID_LOG_DEBUG, "", "NDK:LC: [%d]", samps);
 
 		if (samps != 0) {
 			jfloatArray result;
@@ -119,11 +114,8 @@ void Java_com_s3lab_guoguo_v1_DataService_startProcess(JNIEnv *env,
 			fromNative = (*env)->GetStaticMethodID(env, clazz, "callback",
 					"([F)V");
 			(*env)->CallStaticVoidMethod(env, clazz, fromNative, result);
-//			//(*env)->CallStaticVoidMethod(env, obj, mid, result);
 			(*env)->DeleteLocalRef(env, result);
 		}
-
-		android_AudioOut(p, outt, samps * 2);
 
 	}
 	android_CloseAudioDevice(p);

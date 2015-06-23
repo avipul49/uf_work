@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="app_name">Guoguo</string>
@@ -13,5 +14,8 @@
     <string name="title_section2">Section 2</string>
     <string name="title_section1">Section 1</string>
     <string name="title_activity_main2">Main2Activity</string>
-	<string name="jedis_server">10.136.67.150</string>
+    <string name="jedis_server">10.136.67.150</string>
+    <string name="title_activity_realtime_updates">RealtimeUpdates</string>
+    <string name="action_settings">Settings</string>
+
 </resources>

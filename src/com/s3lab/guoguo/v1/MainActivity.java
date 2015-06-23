@@ -1,16 +1,11 @@
 package com.s3lab.guoguo.v1;
 
-import android.app.ActionBar.Tab;
-import android.app.ActionBar.TabListener;
-import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.graphics.LinearGradient;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -18,10 +13,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
+
 public class MainActivity extends FragmentActivity {
 
-	// private static final String STATE_SELECTED_NAVIGATION_ITEM =
-	// "selected_navigation_item";
 	String userName;
 
 	DataServiceThread dataThread;
@@ -47,26 +44,22 @@ public class MainActivity extends FragmentActivity {
 
 			}
 		});
-		// final ActionBar actionBar = getActionBar();
-		// actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		//
-		// //
-		// actionBar.addTab(actionBar.newTab().setText("Guide").setTabListener(onGuideTabClick));
-		// actionBar.addTab(actionBar.newTab().setText("Social")
-		// .setTabListener(onSocialTabClick));
-		// actionBar.addTab(actionBar.newTab().setText("Map")
-		// .setTabListener(onMapTabClick));
 
 		Bundle data = getIntent().getExtras();
 		userName = data.getString("userName");
+
+		GraphView graph = (GraphView) findViewById(R.id.graph);
+		LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(
+				new DataPoint[] { new DataPoint(0, 1), new DataPoint(1, 5),
+						new DataPoint(2, 3), new DataPoint(3, 2),
+						new DataPoint(4, 6) });
+		graph.addSeries(series);
 
 		dataThread = new DataServiceThread("data service");
 		dataThread.start();
 
 		dataHandler = new DataServiceHandler(dataThread.getLooper());
-
 		dataHandler.post(start);
-
 	}
 
 	private Runnable stop = new Runnable() {
@@ -98,68 +91,6 @@ public class MainActivity extends FragmentActivity {
 
 	};
 
-	TabListener onGuideTabClick = new TabListener() {
-
-		@Override
-		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-		}
-
-		@Override
-		public void onTabSelected(Tab tab, FragmentTransaction ft) {
-			Fragment fragment = new GuideFragment();
-			// Bundle args = new Bundle();
-			// args.putInt(DummySectionFragment.ARG_SECTION_NUMBER,
-			// tab.getPosition() + 1);
-			// fragment.setArguments(args);
-			getSupportFragmentManager().beginTransaction()
-					.replace(R.id.container, fragment).commit();
-		}
-
-		@Override
-		public void onTabReselected(Tab tab, FragmentTransaction ft) {
-		}
-	};
-
-	TabListener onSocialTabClick = new TabListener() {
-
-		@Override
-		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-		}
-
-		@Override
-		public void onTabSelected(Tab tab, FragmentTransaction ft) {
-			Fragment fragment = new SocialFragment();
-
-			getSupportFragmentManager().beginTransaction()
-					.replace(R.id.container, fragment).commit();
-		}
-
-		@Override
-		public void onTabReselected(Tab tab, FragmentTransaction ft) {
-		}
-	};
-
-	TabListener onMapTabClick = new TabListener() {
-
-		@Override
-		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-		}
-
-		@Override
-		public void onTabSelected(Tab tab, FragmentTransaction ft) {
-			Log.v("MainActivity", "map tab selected");
-			// fragment.registerReceiver();
-			MapFragment fragment = new MapFragment();
-
-			getSupportFragmentManager().beginTransaction()
-					.replace(R.id.container, fragment).commit();
-		}
-
-		@Override
-		public void onTabReselected(Tab tab, FragmentTransaction ft) {
-		}
-	};
-
 	private class DataServiceHandler extends Handler {
 		public DataServiceHandler(Looper looper) {
 			super(looper);
@@ -181,20 +112,6 @@ public class MainActivity extends FragmentActivity {
 
 		protected void onLooperPrepared() {
 		}
-	}
-
-	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
-		// if (savedInstanceState.containsKey(STATE_SELECTED_NAVIGATION_ITEM)) {
-		// getActionBar().setSelectedNavigationItem(
-		// savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_ITEM));
-		// }
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		// outState.putInt(STATE_SELECTED_NAVIGATION_ITEM,
-		// getActionBar().getSelectedNavigationIndex());
 	}
 
 	@Override
