@@ -1,0 +1,17 @@
+<resources>
+
+    <string name="app_name">Guoguo</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="title_activity_warmup">WarmupActivity</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_guide">GuideActivity</string>
+    <string name="title_activity_social">SocialActivity</string>
+    <string name="title_activity_direction">DirectionActivity</string>
+    <string name="title_section3">Section 3</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_activity_main2">Main2Activity</string>
+	<string name="jedis_server">10.136.67.150</string>
+</resources>
