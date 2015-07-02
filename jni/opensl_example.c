@@ -3,6 +3,8 @@
 #include <jni.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include "g72x/g72x.h"
+
 
 #define BUFFERFRAMES 2048
 #define VECSAMPS_MONO 1024
@@ -20,6 +22,7 @@ jmethodID fromNative;
 
 jshortArray out;
 
+g726_state   g726State;
 jboolean init(JNIEnv* env, jclass clazz) {
 	jint jvm_result;
 
@@ -123,4 +126,34 @@ void Java_com_s3lab_guoguo_v1_DataService_startProcess(JNIEnv *env,
 
 void Java_com_s3lab_guoguo_v1_DataService_stopProcess() {
 	on = 0;
+}
+
+int Java_com_s3lab_guoguo_v1_DataService_nativeDoAudioEncode(JNIEnv* env,
+		jclass class, jbyteArray pcmData, jint length, jbyteArray g726Data) {
+	g726_init_state(&g726State);
+	jboolean isCopy = JNI_TRUE;
+	jbyte* audioFrame = (*env)->GetByteArrayElements(env,pcmData, NULL);
+	jbyte* audioPacket = (*env)->GetByteArrayElements(env,g726Data, &isCopy);
+
+	int j = 0,i=0;
+	unsigned char byteCode = 0x00;
+	short* pcmBuffer = (short*) audioFrame;
+	for ( i = 0; i < length; i++) {
+		short pcm = pcmBuffer[i];
+		unsigned char code = g726_32_encoder(pcm, AUDIO_ENCODING_LINEAR,
+				&g726State);
+
+		if (i & 0x01) {
+			byteCode = (code << 4) | (byteCode & 0x0f);
+			audioPacket[j] = byteCode;
+			j++;
+		} else {
+			byteCode = code;
+		}
+	}
+
+	(*env)->ReleaseByteArrayElements(env,g726Data, audioPacket, 0);
+	(*env)->ReleaseByteArrayElements(env,pcmData, audioFrame, JNI_ABORT);
+
+	return j;
 }

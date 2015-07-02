@@ -27,7 +27,7 @@ public class AccountManager {
 
 	public void init() {
 
-		redisIP = "10.136.33.136";
+		redisIP = "10.136.32.218";
 
 		conf = new JedisPoolConfig();
 		conf.setTestOnBorrow(true);
@@ -68,7 +68,7 @@ public class AccountManager {
 	public int handleSignupIntent(String username, String pwd) {
 		Log.v("Event Engine", "start to handle signup");
 
-		String accountPool = "accountPool";
+		// String accountPool = "accountPool";
 		String passwordField = "password";
 
 		toolJedis = pool.getResource();
@@ -92,7 +92,7 @@ public class AccountManager {
 
 		try {
 			String tsDesName = "description";
-			String tsImgName = "image";
+			// String tsImgName = "image";
 
 			toolJedis = pool.getResource();
 			toolJedis.connect();

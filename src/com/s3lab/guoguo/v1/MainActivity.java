@@ -1,6 +1,8 @@
 package com.s3lab.guoguo.v1;
 
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -24,6 +26,7 @@ public class MainActivity extends FragmentActivity {
 	DataServiceThread dataThread;
 	DataServiceHandler dataHandler;
 	boolean stopped = false;
+	private LineGraphSeries<DataPoint> series;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -49,10 +52,9 @@ public class MainActivity extends FragmentActivity {
 		userName = data.getString("userName");
 
 		GraphView graph = (GraphView) findViewById(R.id.graph);
-		LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(
-				new DataPoint[] { new DataPoint(0, 1), new DataPoint(1, 5),
-						new DataPoint(2, 3), new DataPoint(3, 2),
-						new DataPoint(4, 6) });
+		series = new LineGraphSeries<DataPoint>(new DataPoint[] {
+				new DataPoint(0, 1), new DataPoint(1, 5), new DataPoint(2, 3),
+				new DataPoint(3, 2), new DataPoint(4, 6) });
 		graph.addSeries(series);
 
 		dataThread = new DataServiceThread("data service");
@@ -115,9 +117,43 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(DataService.AUDIO_BYTES_RECIEVED);
+		registerReceiver(myReceiver, filter);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		unregisterReceiver(myReceiver);
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_main2, menu);
 		return true;
+	}
+
+	BroadcastReceiver myReceiver = new BroadcastReceiver() {
+		public void onReceive(android.content.Context context, Intent intent) {
+			float[] data = intent.getFloatArrayExtra("data");
+			if (data != null) {
+				series.resetData(generateData(data));
+			}
+		};
+	};
+
+	private DataPoint[] generateData(float[] data) {
+		int count = data.length;
+		DataPoint[] values = new DataPoint[count];
+		for (int i = 0; i < count; i++) {
+			double x = i;
+			DataPoint v = new DataPoint(x, data[i]);
+			values[i] = v;
+		}
+		return values;
 	}
 
 }

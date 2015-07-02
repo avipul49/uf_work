@@ -467,7 +467,7 @@ int android_AudioIn(OPENSL_STREAM *p, float *buffer, int size) {
 	bytes = read_circular_buffer_bytes(p->inrb, (char *) p->inputBuffer, bytes);
 	size = bytes / sizeof(short);
 	for (i = 0; i < size; i++) {
-		buffer[i] = (float) p->inputBuffer[i] * CONVMYFLT;
+		buffer[i] = (float) p->inputBuffer[i];
 	}
 	if (p->outchannels == 0)
 		p->time += (double) size / (p->sr * p->inchannels);
