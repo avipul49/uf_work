@@ -1,5 +1,7 @@
 package com.s3lab.guoguo.v1;
 
+import com.s3lab.guoguo.v1.utils.AccountManager;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,7 +9,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -44,6 +45,33 @@ public class WelcomeActivity extends Activity {
 		welcomeHandler = new Handler(welcomeThread.getLooper());
 		Log.v("WelcomeActivity", "thread and handler ready");
 
+		setUIHandler();
+
+		am = new AccountManager(this);
+		am.init();
+
+		loginButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (checkValidation()) {
+					welcomeHandler.post(login);
+				}
+			}
+		});
+
+		signupButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (checkValidation()) {
+					welcomeHandler.post(signup);
+				}
+			}
+		});
+	}
+
+	private void setUIHandler() {
 		uiHandler = new Handler(getMainLooper()) {
 			public void handleMessage(Message msg) {
 				Log.v("uiHandler", "uiHandler received message, its what is "
@@ -77,44 +105,6 @@ public class WelcomeActivity extends Activity {
 				}
 			}
 		};
-
-		am = new AccountManager();
-		am.init();
-
-		loginButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				Log.v("Main", "login clicked");
-
-				 if(checkValidation()){
-					 //gotoMainActivity();
-					 welcomeHandler.post(login);
-				}
-			}
-		});
-
-		signupButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				Log.v("Main", "signup clicked");
-				if (checkValidation()) {
-					welcomeHandler.post(signup);
-				}
-			}
-		});
-	}
-
-	private void gotoWarmupActivity() {
-		Intent toMainActivity = new Intent().setClass(getApplicationContext(),
-				WarmupActivity.class);
-		Bundle data = new Bundle();
-		data.putString("userName", userName);
-		toMainActivity.putExtras(data);
-		startActivity(toMainActivity);
-		overridePendingTransition(R.anim.fadeout, R.anim.fadein);
-
 	}
 
 	private void gotoMainActivity() {
@@ -168,13 +158,6 @@ public class WelcomeActivity extends Activity {
 		}
 		return true;
 
-	}
-
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_HOME) {
-			android.os.Process.killProcess(android.os.Process.myPid());
-		}
-		return super.onKeyDown(keyCode, event);
 	}
 
 }

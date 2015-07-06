@@ -1,11 +1,12 @@
-package com.s3lab.guoguo.v1;
-
-import java.util.ArrayList;
+package com.s3lab.guoguo.v1.utils;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import android.content.Context;
 import android.util.Log;
+
+import com.s3lab.guoguo.v1.R;
 
 public class AccountManager {
 	JedisPool pool;
@@ -14,6 +15,7 @@ public class AccountManager {
 	Jedis toolJedis;
 
 	String redisIP;
+	private Context context;
 
 	static final int SUCCESS = 1;
 	static final int NOUSER = 2;
@@ -21,13 +23,13 @@ public class AccountManager {
 	static final int UNKNOWN = 4;
 	static final int DUPLICATED = 5;
 
-	public AccountManager() {
-
+	public AccountManager(Context context) {
+		this.context = context;
 	}
 
 	public void init() {
 
-		redisIP = "10.136.33.136";
+		redisIP = context.getString(R.string.jedis_server);
 
 		conf = new JedisPoolConfig();
 		conf.setTestOnBorrow(true);
@@ -48,7 +50,6 @@ public class AccountManager {
 		String passwordField = "password";
 
 		toolJedis = pool.getResource();
-		// toolJedis.connect();
 
 		if (toolJedis.hlen(username) == 0) {
 			return NOUSER;
@@ -64,11 +65,9 @@ public class AccountManager {
 		return SUCCESS;
 	}
 
-	/* signup event */
 	public int handleSignupIntent(String username, String pwd) {
 		Log.v("Event Engine", "start to handle signup");
 
-		String accountPool = "accountPool";
 		String passwordField = "password";
 
 		toolJedis = pool.getResource();
@@ -84,41 +83,7 @@ public class AccountManager {
 		return SUCCESS;
 	}
 
-	/* today special event */
-	public ArrayList<String> handleTSIntent(String hashName) {
-
-		Log.v("Event Engine", "start to handle TS");
-		ArrayList<String> result = new ArrayList<String>(2);
-
-		try {
-			String tsDesName = "description";
-			String tsImgName = "image";
-
-			toolJedis = pool.getResource();
-			toolJedis.connect();
-
-			String des = toolJedis.hget(hashName, tsDesName);
-			// String imgSource = toolJedis.hget(hashName, tsImgName);
-			// byte[] imgByte_compressed = imgSource.getBytes();
-			// byte[] imgByte = Snappy.uncompress(imgByte_compressed);
-			// String imgStr = new String(imgByte);
-
-			result.add(0, des);
-			// result.add(imgStr);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		Log.v("Event Engine", "TS handle done");
-
-		// TODO handle error, like null content
-
-		return result;
-
-	}
-
 	public void handleError(int code) {
-
-		// TODO
 	}
 
 }

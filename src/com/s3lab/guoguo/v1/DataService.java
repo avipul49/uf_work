@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import com.s3lab.guoguo.v1.jedis.JedisService;
+import com.s3lab.guoguo.v1.utils.CompressionUtils;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -22,34 +22,25 @@ import android.util.Log;
 
 public class DataService extends Service {
 
-	static final int L = 1024 * 128;
 	static final int CAPACITY_F = 1024 * 128;
 	static final int CAPACITY_B = CAPACITY_F * 4;
 	static Context context;
 	static float[] preProcessContainer = new float[CAPACITY_F];
 	static ByteBuffer bb = ByteBuffer.allocate(CAPACITY_B);
-	static byte[] out = new byte[CAPACITY_B];
 	static LinkedBlockingDeque<Float> queue = new LinkedBlockingDeque<Float>();
 	static MyHandlerThread fromnativeThread = null;
 	static MyHandler fromnativeHandler = null;
-	static float[] block = new float[3];
-	static int readIndex = 0, writeIndex = 0;
-	static int currentIndex = 0;
 
-	JedisPoolConfig conf;
-	JedisPool pool;
+	private static JedisService jedisService;
+	static String notificationChannel = "notification";
 
-	static Jedis uploaderJedis;
-	Jedis locationUpdateJedis;
-	Jedis MsgReceiverJedis;
-
-	static final String redisIP = "10.136.33.136";
+	static byte[] out = new byte[CAPACITY_B];
 	static String out_str;
 
 	static String userName;
-
 	static String listName;
-	static String notificationChannel = "notification";
+
+	public static final String AUDIO_BYTES_RECIEVED = "AudioBytesRecieved";
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -60,20 +51,11 @@ public class DataService extends Service {
 	public void onCreate() {
 		context = this;
 		bb.order(ByteOrder.LITTLE_ENDIAN);
-
+		jedisService = new JedisService(this);
+		jedisService.start();
 		fromnativeThread = new MyHandlerThread("fromnativeThread");
 		fromnativeThread.start();
-
 		fromnativeHandler = new MyHandler(fromnativeThread.getLooper());
-		Log.v("dataservice", "fromnativeThread ready");
-
-		conf = new JedisPoolConfig();
-		conf.setTestOnBorrow(true);
-		conf.setMaxWait(10000);
-		pool = new JedisPool(conf, redisIP);
-		Log.v("dataservice", "jedisPool ready");
-
-		fromnativeHandler.post(startUploader);
 	}
 
 	@Override
@@ -91,13 +73,11 @@ public class DataService extends Service {
 
 	@Override
 	public void onDestroy() {
-		pool.returnResource(uploaderJedis);
+		jedisService.stop();
 		Log.v("dataservice", "jedis returned");
 		stopProcess();
 		Log.v("dataservice", "stop");
 	}
-
-	static boolean hh = true;
 
 	public static void callback(final float[] input) {
 		System.out.println(queue.size());
@@ -106,6 +86,10 @@ public class DataService extends Service {
 		}
 		if (queue.size() > CAPACITY_F) {
 			new UploadData(queue.toArray(new Float[CAPACITY_F])).execute();
+			Intent intent = new Intent();
+			intent.setAction(AUDIO_BYTES_RECIEVED);
+			intent.putExtra("data", input);
+			context.sendBroadcast(intent);
 			queue.clear();
 		}
 	}
@@ -123,12 +107,11 @@ public class DataService extends Service {
 				float temp = preProcessContainer[i]; // to test
 				bb.putFloat(temp);
 			}
-
-			out = bb.array();
-			bb.clear();
 			try {
+				out = CompressionUtils.compress(bb.array());
+				bb.clear();
 				out_str = Base64.encodeToString(out, Base64.DEFAULT);
-				uploaderJedis.publish(listName, out_str);
+				jedisService.sendData(listName, out_str);
 				Log.v("", "---- " + preProcessContainer[0] + " " + +out[0]
 						+ " " + out[1] + " " + out[2] + " " + out[3]);
 			} catch (Exception e) {
@@ -143,10 +126,8 @@ public class DataService extends Service {
 	}
 
 	Runnable recordStart = new Runnable() {
-
 		@Override
 		public void run() {
-
 			try {
 				startProcess();
 				Log.v("dataservice", "record started");
@@ -155,9 +136,7 @@ public class DataService extends Service {
 				e.printStackTrace();
 
 			}
-
 		}
-
 	};
 
 	Runnable transmissionSignal = new Runnable() {
@@ -166,25 +145,8 @@ public class DataService extends Service {
 		public void run() {
 
 			try {
-				uploaderJedis.publish(notificationChannel, userName + ":start");
+				jedisService.sendData(notificationChannel, userName + ":start");
 				Log.v("dataservice", "start signal sent");
-			} catch (Exception e) {
-				Log.v("dataservice", "error when creating uploaderJedis");
-				e.printStackTrace();
-
-			}
-
-		}
-
-	};
-
-	Runnable startUploader = new Runnable() {
-
-		@Override
-		public void run() {
-			try {
-				uploaderJedis = pool.getResource();
-				Log.v("dataservice", "uploaderJedis started");
 			} catch (Exception e) {
 				Log.v("dataservice", "error when creating uploaderJedis");
 				e.printStackTrace();
@@ -218,27 +180,12 @@ public class DataService extends Service {
 		}
 	}
 
-	public native boolean init();
-
-	public native void createEngine();
-
-	public native boolean createAudioRecorder();
-
-	public native void recordjni();
-
-	public native void clear();
-
-	public native void shutdown();
-
-	public native void stop();
-
 	public static native void startProcess();
 
 	public static native void stopProcess();
 
 	static {
 		System.loadLibrary("record-jni");
-
 	}
 
 }
