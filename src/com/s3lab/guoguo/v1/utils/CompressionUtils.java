@@ -28,8 +28,8 @@ public class CompressionUtils {
 
 		deflater.end();
 
-		Log.i("compression ", "Original: " + data.length / 1024 + " Kb");
-		Log.i("compression ", "Compressed: " + output.length / 1024 + " Kb");
+		Log.i("compression ", "Original: " + data.length + " Kb");
+		Log.i("compression ", "Compressed: " + output.length + " Kb");
 		return output;
 	}
 

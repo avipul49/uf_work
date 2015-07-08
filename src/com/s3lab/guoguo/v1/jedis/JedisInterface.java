@@ -30,7 +30,7 @@ public class JedisInterface {
 	}
 
 	public void publish(String channel, String message) {
-		if (uploaderJedis != null)
+		if (uploaderJedis != null && uploaderJedis.isConnected())
 			uploaderJedis.publish(channel, message);
 	}
 }

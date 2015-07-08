@@ -44,33 +44,18 @@ public final class R {
         public static final int placeholder2=0x7f020008;
     }
     public static final class id {
-        public static final int action_settings=0x7f090010;
-        public static final int container=0x7f090000;
-        public static final int direction=0x7f090001;
-        public static final int graph=0x7f09000e;
-        public static final int layout_guidefragment=0x7f090009;
-        public static final int layout_mapfragment=0x7f09000a;
-        public static final int layout_socialfragment=0x7f09000c;
-        public static final int linearLayout1=0x7f090002;
-        public static final int loginbutton=0x7f090007;
-        public static final int menu_settings=0x7f09000f;
-        public static final int motionlayer=0x7f09000b;
-        public static final int signupbutton=0x7f090008;
-        public static final int stop_button=0x7f09000d;
-        public static final int tsImage=0x7f090003;
-        public static final int tsText=0x7f090004;
-        public static final int userName=0x7f090005;
-        public static final int userPwd=0x7f090006;
+        public static final int action_settings=0x7f090007;
+        public static final int graph=0x7f090005;
+        public static final int loginbutton=0x7f090002;
+        public static final int menu_settings=0x7f090006;
+        public static final int signupbutton=0x7f090003;
+        public static final int stop_button=0x7f090004;
+        public static final int userName=0x7f090000;
+        public static final int userPwd=0x7f090001;
     }
     public static final class layout {
-        public static final int activity_main=0x7f030000;
-        public static final int activity_main2=0x7f030001;
-        public static final int activity_warmup=0x7f030002;
-        public static final int activity_welcome=0x7f030003;
-        public static final int fragment_guide=0x7f030004;
-        public static final int fragment_map=0x7f030005;
-        public static final int fragment_social=0x7f030006;
-        public static final int main=0x7f030007;
+        public static final int activity_welcome=0x7f030000;
+        public static final int main=0x7f030001;
     }
     public static final class menu {
         public static final int activity_direction=0x7f080000;

@@ -84,7 +84,7 @@ public class DataService extends Service {
 		for (float value : input) {
 			queue.add(value);
 		}
-		if (queue.size() > CAPACITY_F) {
+		if (queue.size() >= CAPACITY_F) {
 			new UploadData(queue.toArray(new Float[CAPACITY_F])).execute();
 			Intent intent = new Intent();
 			intent.setAction(AUDIO_BYTES_RECIEVED);
@@ -108,7 +108,8 @@ public class DataService extends Service {
 				bb.putFloat(temp);
 			}
 			try {
-				out = CompressionUtils.compress(bb.array());
+				// out = CompressionUtils.compress(bb.array());
+				out = bb.array();
 				bb.clear();
 				out_str = Base64.encodeToString(out, Base64.DEFAULT);
 				jedisService.sendData(listName, out_str);
@@ -145,7 +146,7 @@ public class DataService extends Service {
 		public void run() {
 
 			try {
-				jedisService.sendData(notificationChannel, userName + ":start");
+				jedisService.sendData(notificationChannel, userName);
 				Log.v("dataservice", "start signal sent");
 			} catch (Exception e) {
 				Log.v("dataservice", "error when creating uploaderJedis");
