@@ -185,8 +185,14 @@ public class DataService extends Service {
 
 	public static native void stopProcess();
 
+	public static native void nativeInitMediaEncoder(int width, int height);
+
+	public static native void nativeReleaseMediaEncoder(int width, int height);
+
+	public static native int nativeDoVideoEncode(byte[] in, byte[] out, int flag);
+
 	static {
-		System.loadLibrary("record-jni");
+		System.loadLibrary("MediaEncoder");
 	}
 
 }

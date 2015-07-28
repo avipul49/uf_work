@@ -1,18 +1,33 @@
-LOCAL_PATH := $(call my-dir)
+LOCAL_PATH:= $(call my-dir)
+MY_LOCAL_PATH = $(LOCAL_PATH)
 
+###########################################################
+# building x264 library 
+#
 include $(CLEAR_VARS)
+LOCAL_MODULE    := libx264_pre
+LOCAL_SRC_FILES := x264/libx264.a
+include $(PREBUILT_STATIC_LIBRARY)
 
-LOCAL_MODULE    := record-jni
-LOCAL_SRC_FILES := opensl_example.c \
-opensl_io.c 
-# for native audio
-LOCAL_LDLIBS    += -lOpenSLES 
-# for logging
-LOCAL_LDLIBS    += -llog
-# for native asset manager
-LOCAL_LDLIBS    += -landroid  
+###########################################################
+# building application library 
+#
+include $(CLEAR_VARS)
+LOCAL_MODULE := libMediaEncoder
+LOCAL_CPP_EXTENSION := .cc .cpp
+LOCAL_CPPFLAGS := -O2 -Werror -Wall 
+LOCAL_C_INCLUDES :=  $(MY_LOCAL_PATH)
+LOCAL_SRC_FILES :=  main_jni.cpp \
+					opensl_example.c \
+                   h264encoder.cpp \
+                   opensl_io.c 
+                    
+LOCAL_LDLIBS += -llog -lz -lOpenSLES
+LOCAL_SHARED_LIBRARIES := libcutils\
+                          libgnustl\
+                          libdl
+
+LOCAL_STATIC_LIBRARIES := libx264_pre
 
 include $(BUILD_SHARED_LIBRARY)
-
-
 

@@ -1,6 +1,7 @@
+#include "opensl_example.h"
 #include <android/log.h>
 #include "opensl_io.h"
-#include <jni.h>
+
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -20,77 +21,10 @@ jmethodID fromNative;
 
 jshortArray out;
 
-jboolean init(JNIEnv* env, jclass clazz) {
-	jint jvm_result;
 
-	if (jniEnv == 0) {
-		jniEnv = env;
-
-		__android_log_print(ANDROID_LOG_VERBOSE, "native-activity",
-				"ENV initialization succeed");
-
-	} else {
-		__android_log_print(ANDROID_LOG_VERBOSE, "native-activity",
-				"ENV initialization failed");
-		return JNI_FALSE;
-	}
-
-	if (g_jvm == 0) {
-		jvm_result = (*jniEnv)->GetJavaVM(jniEnv, &g_jvm);
-
-		__android_log_print(ANDROID_LOG_VERBOSE, "native-activity",
-				"JVM initialization succeed");
-
-	} else {
-		__android_log_print(ANDROID_LOG_VERBOSE, "native-activity",
-				"JVM initialization failed");
-		return JNI_FALSE;
-	}
-
-	if (DataService == 0) {
-		DataService = (*jniEnv)->FindClass(jniEnv,
-				"com/s3lab/guoguo/v1/DataService");
-		DataService = (jclass)((*jniEnv)->NewGlobalRef(jniEnv, DataService));
-
-		__android_log_print(ANDROID_LOG_VERBOSE, "native-activity",
-				"class initialization succeed");
-	} else {
-		__android_log_print(ANDROID_LOG_VERBOSE, "native-activity",
-				"class initialization failed");
-		return JNI_FALSE;
-	}
-
-	if (mRA == 0) {
-		jmethodID construction_id = (*jniEnv)->GetMethodID(jniEnv, DataService,
-				"<init>", "()V");
-		mRA = (*jniEnv)->NewObject(jniEnv, DataService, construction_id);
-
-		__android_log_print(ANDROID_LOG_VERBOSE, "native-activity",
-				"object initialization succeed");
-	} else {
-		__android_log_print(ANDROID_LOG_VERBOSE, "native-activity",
-				"object initialization failed");
-		return JNI_FALSE;
-	}
-
-	if (fromNative == 0) {
-		fromNative = (*jniEnv)->GetStaticMethodID(jniEnv, DataService,
-				"callback", "([F)V");
-		__android_log_print(ANDROID_LOG_VERBOSE, "native-activity",
-				"method initialization succeed");
-	} else {
-		__android_log_print(ANDROID_LOG_VERBOSE, "native-activity",
-				"method initialization failed");
-		return JNI_FALSE;
-	}
-
-	return JNI_TRUE;
-}
-
-void Java_com_s3lab_guoguo_v1_DataService_startProcess(JNIEnv *env,
+void start_process(JNIEnv *env,
 		jclass clazz) {
 	__android_log_print(ANDROID_LOG_DEBUG, "", "NDK:LC: [ve]");
-	init(env, clazz);
 	OPENSL_STREAM *p;
 	int samps, i, j;
 	float inbuffer[VECSAMPS_MONO];
@@ -121,6 +55,6 @@ void Java_com_s3lab_guoguo_v1_DataService_startProcess(JNIEnv *env,
 	android_CloseAudioDevice(p);
 }
 
-void Java_com_s3lab_guoguo_v1_DataService_stopProcess() {
+void stop_process() {
 	on = 0;
 }
